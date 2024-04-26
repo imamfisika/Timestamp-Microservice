@@ -24,19 +24,53 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-app.get("/api/:time", function(req, res){
-  if (req.params.time.includes('-')){
 
+app.get("/api", function (req, res) {
+  res.json({
+    unix : new Date().getTime(),
+    utc : new Date().toUTCString()
+  })
+})
+
+app.get("/api/:time", function(req, res){
+
+  let input = req.params.time
+  let tgl = new Date(input)
+
+  if (!input) {
     res.json({
-      "unix" : Math.floor(new Date(req.params.time).getTime()),
-      "utc" : new Date(req.params.time).toUTCString()
+      unix : new Date().getTime(),
+      utc : new Date().toUTCString()
     })
   }
-  else {
-    res.json({
-      "unix" : req.params.time,
-      "utc" : new Date(Math.floor(req.params.time)).toUTCString()
-    })
+
+  
+
+  if (tgl.toUTCString() == "Invalid Date"){ 
+
+    tgl = new Date(Math.floor(input));
+
+    if (tgl.toUTCString() == "Invalid Date"){
+      res.json({
+        error: "Invalid Date"
+      })
+    }
+
+    else {
+      res.json({
+        unix : Math.floor(req.params.time),
+        utc : new Date(Math.floor(req.params.time)).toUTCString()
+      })
+    }
+
+   
+  }
+  else {  
+      res.json({
+        unix : Math.floor(new Date(req.params.time).getTime()),
+        utc : new Date(req.params.time).toUTCString()
+      })
+  
   }
 })
 
